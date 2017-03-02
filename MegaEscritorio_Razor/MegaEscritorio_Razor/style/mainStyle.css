@@ -1,0 +1,175 @@
+﻿html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+    max-width: 1200px;
+  height: 60%;
+  font-family: 'Roboto Slab', serif;
+  font-size: 10pt;
+  background-color: LightGray;
+  line-height: 1.6em;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+h1 {
+  font-size: 1.6em;
+}
+
+h2 {
+  font-size: 1.4em;
+}
+
+#container {
+  min-height: 100%;
+  left: 10%;
+}
+
+#header {
+  padding: 8px;
+  background-color: #4b6c9e;
+  color: White;
+  display:flex;
+  align-content:flex-end;
+}
+#header h1{
+  flex: 1 100%;
+  font-size: 3em;
+}
+#nav {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  flex: 1 60%;
+  align-items:flex-end;
+
+}
+#nav a {
+    text-align: center; 
+    padding-left: 10px;
+    padding-right: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+}
+
+.nav-link:visited {
+  color: white;
+}
+
+a:hover {
+  color: darkgoldenrod;
+}
+
+a:visited{
+    color:mediumblue;
+}
+
+#main {
+  padding: 8px;
+  padding-bottom: 4em;
+  background-color: White;
+}
+
+#footer {
+  height: 2em;
+  padding: 8px;
+  margin-top: -2em;
+  background-color: LightGray;
+}
+
+.head {
+  background-color: #E8E8E8;
+  font-weight: bold;
+  color: #FFF;
+  border-bottom: 1px solid #C0C0C0;
+}
+
+.grid {
+  margin-top: 2em;
+  border-collapse: collapse;
+  border: 1px solid #C0C0C0;
+  table-layout:fixed;
+  width: 100%;
+}
+
+.grid th,
+td {
+  text-align: left;
+  text-wrap:normal;
+  padding: 5px;
+  /*max-width: 20em;*/
+}
+
+.alt {
+  background-color: #E8E8E8;
+  color: #000;
+}
+
+.selected {
+  background-color: Yellow;
+}
+
+span.caption {
+  width: 100px;
+}
+
+span.dataDisplay {
+  font-weight: bold;
+}
+
+.edit a:link {
+  text-decoration: none;
+  color: mediumblue;
+}
+
+.delete a:link {
+  text-decoration: none;
+  color: mediumblue;
+}
+
+.edit a:visited {
+  color: mediumblue;
+}
+
+.edit a:hover {
+  color: darkgoldenrod;
+}
+
+.delete a:visited {
+  color: mediumblue;
+}
+
+.delete a:hover {
+  color: darkgoldenrod;
+}
+
+.block label {
+  display: block;
+  text-align: left;
+  font-weight: bold;
+  color: mediumblue;
+}
+
+.block input,
+select,
+textarea {
+  width: 20em;
+}
+
+.block textarea {
+  height: 15em;
+}
+
+.note{
+    text-align:left;
+    width:200em;
+}

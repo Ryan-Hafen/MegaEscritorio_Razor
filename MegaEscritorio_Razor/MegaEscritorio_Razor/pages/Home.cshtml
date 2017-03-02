@@ -1,0 +1,67 @@
+﻿@{
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Scripture List";
+
+    var db = Database.Open("MegaEscritorioDB");
+    var selectCommand = "SELECT * FROM deskDetails";
+    var searchTerm = "";
+
+    if (!Request.QueryString["search"].IsEmpty())
+    {
+        selectCommand = "SELECT * FROM deskDetails WHERE book LIKE @0 or note LIKE @0";
+        searchTerm = "%" + Request["search"] + "%";
+    }
+
+    var selectedData = db.Query(selectCommand, searchTerm);
+    var grid = new WebGrid(source: selectedData, defaultSort: "book", rowsPerPage: 5);
+}
+
+
+<h2>Scripture List</h2>
+<div>
+    <p>
+        @if (WebSecurity.IsAuthenticated)
+        {
+            @:
+        <p>Welcome, @WebSecurity.CurrentUserName</p>
+            @:<p><a href="@Href("~/pages/Logout")">Log out</a></p>
+          }
+        else
+        {
+            @:<a href="@Href("~/pages/Login")">Log in</a> |
+            @:<a href="@Href("~/pages/Register")">Register</a>
+          }
+        </p>
+        <p>
+            <a href="@Href("~/Members/Members")">Members area</a>
+        </p>
+        <p>
+            <a href="@Href("~/Admin/ManageRoles")">Manage Roles</a> (must be logged in as the Admin user MikeP)
+        </p>
+    <form method="get">
+        <div>
+            <label for="search"></label>
+            <input type="text" name="search" value="@Request.QueryString["search"]" />
+            <input type="Submit" value="Search" /><br />
+        </div>
+    </form>
+</div>
+<div>
+
+    @grid.GetHtml(
+                    tableStyle: "grid",
+                    headerStyle: "head",
+                    alternatingRowStyle: "alt",
+                    mode: WebGridPagerModes.Numeric,
+                    columns: grid.Columns(
+                            grid.Column(format: @<a href="~/pages/editScripture?id=@item.id">Edit</a>, style: "edit"),
+                            grid.Column("book", "Books", style: "book"),
+                            grid.Column("chapter", "Chapter(s)", style: "chapter"),
+                            grid.Column("verse", "Verse(s)", style: "verse"),
+                            grid.Column("favoriteFlag", "Favorite", style: "favorite"),
+                            grid.Column("note", "Note", style: "note"),
+                            grid.Column("DateAdded", "Date Added", format: @<text>@item.DateAdded.ToString("MMM dd yyyy")</text>, style: "date"),
+                            grid.Column(format: @<a href="~/pages/deleteScripture?id=@item.id">Delete</a>, style: "delete")
+                    )
+           )
+</div>
