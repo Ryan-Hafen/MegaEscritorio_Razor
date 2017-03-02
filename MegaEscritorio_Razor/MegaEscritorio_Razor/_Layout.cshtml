@@ -3,23 +3,24 @@
 <head>
     <title>@Page.Title</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
-    <link href="~/Styles/mainStyle.css" rel="stylesheet" type="text/css" />
+    <link href="~/style/mainStyle.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div id="container">
         <div id="header">
             <h1>Mega Escritorio</h1>
             <div id="nav">
-                <a href="~/pages/Index.cshtml" class="nav-link">Home</a>
+                <a href="~/pages/Home.cshtml" class="nav-link">Home</a>
                 <a href="~/pages/addDesk.cshtml" class="nav-link">Add</a>
-                <a href="~/pages/login.cshtml" class="nav-link">Add</a>
+                <a href="~/pages/login.cshtml" class="nav-link">Login</a>
+                <a href="~/pages/register.cshtml" class="nav-link">Register</a>
             </div>
         </div>
         <div id="main">
             @RenderBody()
         </div>
         <div id="footer">
-            &copy; @DateTime.Now.Year My Scripture Journal
+            &copy; @DateTime.Now.Year Mega Escritorio
         </div>
     </div>
 </body>

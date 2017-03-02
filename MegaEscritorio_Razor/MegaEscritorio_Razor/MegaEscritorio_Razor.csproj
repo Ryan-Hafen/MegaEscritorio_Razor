@@ -138,7 +138,7 @@
     <Content Include="pages\addDesk.cshtml" />
     <Content Include="pages\deleteDesk.cshtml" />
     <Content Include="pages\editDesk.cshtml" />
-    <Content Include="_Layout.html" />
+    <None Include="_Layout.cshtml" />
     <Content Include="pages\customer.cshtml" />
     <Content Include="pages\login.cshtml" />
     <Content Include="pages\register.cshtml" />
