@@ -1,9 +1,16 @@
-﻿<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-
-    </body>
+﻿@{
+    WebSecurity.Logout();
+    System.Threading.Thread.Sleep(5000);
+    Response.Redirect("~/pages/Home.cshtml");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="@Href("~/mainStyle.css")" type="text/css" />
+    <title>Logout</title>
+</head>
+<body>
+    <h1>Logout</h1>
+    <p>You are now logged out!</p>
+</body>
 </html>

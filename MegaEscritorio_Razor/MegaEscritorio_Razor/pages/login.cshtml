@@ -1,4 +1,10 @@
 ﻿@{
+    Validation.Add("username",
+        Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$",
+        "Invalid format for an email address")
+        );
+    Validation.RequireField("password", "Password cannot be empty");
+
     var username = "";
     var password = "";
     var errorMessage = "";
@@ -35,12 +41,12 @@
             </p>
         }
         <p>
-            <label for="username">Username:</label><br />
-            <input type="text" name="username" id="username" value="" />
+            @Html.Label("username")
+            @Html.TextBox("username", Request.Form["username"])
         </p>
         <p>
-            <label for="password">Password:</label><br />
-            <input type="password" name="password" id="password" value="" />
+            @Html.Label("password")
+            @Html.Password("password", Request.Form["password"])
         </p>
         <p>
             <input type="submit" value="Submit" />

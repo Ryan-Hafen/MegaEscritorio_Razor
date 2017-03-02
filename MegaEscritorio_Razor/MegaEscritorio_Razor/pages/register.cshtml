@@ -1,5 +1,5 @@
 ﻿@{
-    Validation.Add("email",
+    Validation.Add("username",
         Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$",
         "Invalid format for an email address")
         );
@@ -73,7 +73,7 @@
         <p>
             @Html.Label("Username (email):")
             @Html.TextBox("username", @Request["username"])
-            @Html.ValidationMessage("email")
+            @Html.ValidationMessage("username")
         </p>
         <p>
             @Html.Label("First Name:")
