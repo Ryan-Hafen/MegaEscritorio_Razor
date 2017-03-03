@@ -1,28 +1,33 @@
 ﻿@{
     Layout = "~/_Layout.cshtml";
-    Page.Title = "Add Scripture";
+    Page.Title = "Add Desk Order";
 
-    Validation.RequireField("book", "Book is required!");
-    Validation.RequireField("chapter", "Chapter is required!");
+    Validation.RequireField("length", "Length is required!");
+    Validation.RequireField("width", "Width is required!");
+    Validation.RequireField("drawers", "Please select number of drawers!");
+    Validation.RequireField("material", "Please select desk surface material!");
+    Validation.RequireField("days", "Book is required!");
 
 
-    var book = "";
-    var chapter = "";
-    var verse = "";
-    var favoriteFlag = "";
-    var note = "";
+    var length = 0;
+    var width = 0;
+    var surfaceArea = 0;
+    var drawers = 0;
+    var material = "";
+    var days = 0;
 
     if (IsPost)
     {
-        book = Request.Form["book"];
-        chapter = Request.Form["chapter"];
-        verse = Request.Form["verse"];
-        favoriteFlag = Request.Form["favoriteFlag"];
-        note = Request.Form["note"];
+        length = Request.Form["length"].AsInt();
+        width = Request.Form["width"].AsInt();
+        surfaceArea = length * width;
+        drawers = Request.Form["drawers"].AsInt();
+        material = Request.Form["material"];
+        days = Request.Form["days"].AsInt();
 
-        var db = Database.Open("myScriptureJournalDB");
-        var insertCommand = "INSERT INTO scripture (book, chapter, verse, favoriteFlag, note) Values(@0, @1, @2, @3, @4)";
-        db.Execute(insertCommand, book, chapter, verse, favoriteFlag, note);
+        var db = Database.Open("MegaEscritorioDB");
+        var insertCommand = "INSERT INTO deskDetails (length, width, drawers, material, days) Values(@0, @1, @2, @3, @4)";
+        db.Execute(insertCommand, length, width, drawers, material, days);
         Response.Redirect("~/pages/Index");
 
     }
@@ -33,34 +38,56 @@
     <fieldset>
         <legend>Scripture</legend>
         <p class="block">
-            @Html.Label("Book:")
-            @Html.TextBox("book", Request.Form["book"])
-            @Html.ValidationMessage("book")
+            @Html.Label("Length:")
+            @Html.TextBox("length", Request.Form["length"])
+            @Html.ValidationMessage("length")
         </p>
         <p class="block">
-            @Html.Label("Chapter(s):")
-            @Html.TextBox("chapter", Request.Form["chapter"])
-            @Html.ValidationMessage("chapter")
+            @Html.Label("Width:")
+            @Html.TextBox("width", Request.Form["width"])
+            @Html.ValidationMessage("width")
         </p>
         <p class="block">
-            @Html.Label("Verse(s):")
-            @Html.TextBox("verse", Request.Form["verse"])
-        </p>
-        <p class="block">
-            @Html.Label("Favorite:")
-            <select name="favoriteFlag">
+            @Html.Label("Drawers:")
+            <select name="drawers">
                 <option value="">--Select--</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
             </select>
         </p>
         <p class="block">
-            @Html.Label("Note:")
-            @Html.TextArea("note", Request.Form["note"])
+            @Html.Label("Material:")
+            <select name="material">
+                <option value="">--Select--</option>
+                <option value="1"></option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
+        </p>
+        <p class="block">
+            @Html.Label("Drawers:")
+            <select name="drawers">
+                <option value="">--Select--</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+            </select>
         </p>
         <p>
-            <input type="submit" name="buttonSubmit" value="Add Scripture" />
+            <input type="submit" name="buttonSubmit" value="Add Desk Order" />
         </p>
     </fieldset>
 </form>
-@*<p><a href="~/pages/Index.cshtml">Back to Scripture List</a></p>*@
