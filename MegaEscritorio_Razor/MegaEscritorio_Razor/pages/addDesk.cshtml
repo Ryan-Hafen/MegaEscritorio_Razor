@@ -2,41 +2,107 @@
     Layout = "~/_Layout.cshtml";
     Page.Title = "Add Desk Order";
 
-    Validation.RequireField("length", "Length is required!");
-    Validation.RequireField("width", "Width is required!");
-    Validation.RequireField("drawers", "Please select number of drawers!");
-    Validation.RequireField("material", "Please select desk surface material!");
-    Validation.RequireField("days", "Book is required!");
+    Validation.Add("email", Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$", "Invalid format for an email address"));
+    Validation.Add("firstName", Validator.Required("First Name is required!"));
+    Validation.Add("lastName", Validator.Required("Last Name is required!"));
+    Validation.Add("length", Validator.Required("Length is required!"),Validator.Range(24,48,"Length must be between 24 and 48 inches."));
+    Validation.Add("width", Validator.Required("Width is required!"), Validator.Range(24, 48, "Width must be between 24 and 48 inches."));
+    Validation.Add("drawers", Validator.Required("Please select the number of drawers!"), Validator.Range(0, 7, ""));
+    Validation.Add("material", Validator.Required("Please choose the desk top is required!"));
+    Validation.Add("rushOrderDays", Validator.Required("Please choose the shipping!"), Validator.Range(0, 7, ""));
 
-
+    var email = "";
+    var firstName = "";
+    var lastName = "";
     var length = 0;
     var width = 0;
     var surfaceArea = 0;
     var drawers = 0;
+    var drawerCost = 0;
     var material = "";
-    var days = 0;
+    var materialCost = 0;
+    var rushOrderDays = 0;
+    var rushOrderCost = 0;
+    var finalPrice = 0;
 
-    if (IsPost)
+
+    var db = Database.Open("MegaEscritorioDB");
+
+    if (IsPost && Validation.IsValid())
     {
+        email = Request.Form["email"];
+        firstName = Request.Form["firstName"];
+        lastName = Request.Form["lastName"];
         length = Request.Form["length"].AsInt();
         width = Request.Form["width"].AsInt();
         surfaceArea = length * width;
         drawers = Request.Form["drawers"].AsInt();
+        drawerCost = drawers * 50;
         material = Request.Form["material"];
-        days = Request.Form["days"].AsInt();
+        switch (material)
+        {
+            case "Mohagony":
+                materialCost = 1000;
+                break;
+            case "Oak":
+                materialCost = 750;
+                break;
+            case "Birch":
+                materialCost = 600;
+                break;
+            case "Poplar":
+                materialCost = 500;
+                break;
+            case "Leather":
+                materialCost = 250;
+                break;
+            case "Pine":
+                materialCost = 100;
+                break;
+            case "Laminate":
+                materialCost = 50;
+                break;
+        }
+        rushOrderDays = Request.Form["days"].AsInt();
 
-        var db = Database.Open("MegaEscritorioDB");
-        var insertCommand = "INSERT INTO deskDetails (length, width, drawers, material, days) Values(@0, @1, @2, @3, @4)";
-        db.Execute(insertCommand, length, width, drawers, material, days);
-        Response.Redirect("~/pages/Index");
+        var dbCommand = "SELECT cost FROM rushOrder WHERE days = @0 and @1 BETWEEN lowArea AND highArea";
+        rushOrderCost = db.QuerySingle(dbCommand, rushOrderDays, surfaceArea);
 
+        if(surfaceArea <= 1000)
+        {
+            finalPrice = 200 + drawerCost + materialCost + rushOrderCost;
+            var insertCommand = "INSERT INTO deskDetails (email, firstName, lastName, length, width, surfaceArea, drawers, drawerCost, material, materialCost, rushOrderDays, rushOrderCost, finalPrice, dateCreated) Values(@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)";
+            db.Execute(insertCommand, email, firstName, lastName, length, width, surfaceArea, drawers, drawerCost, material, materialCost, rushOrderDays, rushOrderCost, finalPrice, DateTime.Now);
+            Response.Redirect("~/pages/Home");
+        }
+        else
+        {
+            finalPrice = ((surfaceArea - 1000) * 5) + 200 + drawerCost + materialCost + rushOrderCost;
+            var insertCommand = "INSERT INTO deskDetails (email, firstName, lastName, length, width, surfaceArea, drawers, drawerCost, material, materialCost, rushOrderDays, rushOrderCost, finalPrice, dateCreated) Values(@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)";
+            db.Execute(insertCommand, email, firstName, lastName, length, width, surfaceArea, drawers, drawerCost, material, materialCost, rushOrderDays, rushOrderCost, finalPrice, DateTime.Now);
+            Response.Redirect("~/pages/Home");
+        }
     }
-}
-<h2>Add a Scripture</h2>
+ }
+<h2>Add a Desk Order</h2>
 @Html.ValidationSummary()
 <form method="post">
     <fieldset>
-        <legend>Scripture</legend>
+        <p class="block">
+            @Html.Label("Email:")
+            @Html.TextBox("email", Request.Form["email"])
+            @Html.ValidationMessage("email")
+        </p>
+        <p class="block">
+            @Html.Label("First Name:")
+            @Html.TextBox("firstName", Request.Form["firstName"])
+            @Html.ValidationMessage("firstName")
+        </p>
+        <p class="block">
+            @Html.Label("Last Name:")
+            @Html.TextBox("lastName", Request.Form["lastName"])
+            @Html.ValidationMessage("lastName")
+        </p>
         <p class="block">
             @Html.Label("Length:")
             @Html.TextBox("length", Request.Form["length"])
@@ -51,43 +117,63 @@
             @Html.Label("Drawers:")
             <select name="drawers">
                 <option value="">--Select--</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
+                <option value=0>No Drawers</option>
+                <option value=1>1</option>
+                <option value=2>2</option>
+                <option value=3>3</option>
+                <option value=4>4</option>
+                <option value=5>5</option>
+                <option value=6>6</option>
+                <option value=7>7</option>
             </select>
+            @Html.ValidationMessage("drawers")
         </p>
         <p class="block">
             @Html.Label("Material:")
-            <select name="material">
-                <option value="">--Select--</option>
-                <option value="1"></option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
+            <select name="material" onchange="displayImage(this)">
+                <option value="Null">--Select--</option>
+                <option value="Mohagony">Mohagony</option>
+                <option value="Oak">Oak</option>
+                <option value="Birch">Birch</option>
+                <option value="Poplar">Poplar</option>
+                <option value="Leather">Laminate</option>
+                <option value="Pine">Pine</option>
+                <option value="Laminate">Laminate</option>
             </select>
+            @Html.ValidationMessage("material")
         </p>
+        <div id="imgaeDIV" style="visibility:hidden">
+            <img id="canvas" src="" alt="Sample image">
+        </div>
         <p class="block">
-            @Html.Label("Drawers:")
-            <select name="drawers">
+            @Html.Label("Rush Order:")
+            <select name="rushOrderDays">
                 <option value="">--Select--</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
+                <option value=0>No Rush</option>
+                <option value=3>3 Days</option>
+                <option value=5>5 Days</option>
+                <option value=7>7 Days</option>
             </select>
+            @Html.ValidationMessage("rushOrderDays")
         </p>
         <p>
             <input type="submit" name="buttonSubmit" value="Add Desk Order" />
         </p>
     </fieldset>
 </form>
+
+<script type="text/javascript">
+    function displayImage(elem)
+    {
+      if (elem != "Null")
+      {
+          var image = document.getElementById("canvas");
+          image.src = "/pages/images/" + elem.value + ".jpg";
+          document.getElementById("imgaeDIV").style.visibility = "visible";
+      }
+      else
+      {
+          document.getElementById("imgaeDIV").style.visibility = "hidden";
+      }
+    }
+</script>

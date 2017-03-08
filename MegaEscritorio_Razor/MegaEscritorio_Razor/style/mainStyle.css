@@ -169,7 +169,7 @@ textarea {
   height: 15em;
 }
 
-.note{
-    text-align:left;
-    width:200em;
+#imgaeDIV {
+    visibility: hidden;
+    float: right;
 }
