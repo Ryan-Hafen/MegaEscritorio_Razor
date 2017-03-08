@@ -3,12 +3,12 @@
     Page.Title = "Home";
 
     var db = Database.Open("MegaEscritorioDB");
-    var selectCommand = "SELECT d.*, u.firstname, u.lastname, r.days, r.cost FROM deskDetails as d join UserProfile as u on d.customerid = u.userid join rushorder as r on d.rushOrderID = r.id";
+    var selectCommand = "SELECT * FROM deskDetails";
     var searchTerm = "";
 
     if (!Request.QueryString["search"].IsEmpty())
     {
-        selectCommand = "SELECT d.*, u.firstname, u.lastname, r.days, r.cost FROM deskDetails as d join UserProfile as u on d.customerid = u.userid join rushorder as r on d.rushOrderID = r.id WHERE u.firstname LIKE @0 or u.lastname LIKE @0";
+        selectCommand = "SELECT * FROM deskDetails WHERE firstname LIKE @0 or lastname LIKE @0";
         searchTerm = "%" + Request["search"] + "%";
     }
 
@@ -19,16 +19,7 @@
 
 <h2>Home</h2>
 <div>
-    @if (WebSecurity.IsAuthenticated)
-    {
-        @:<p>Welcome, @WebSecurity.CurrentUserName</p>
-            @:<p><a href="@Href("~/pages/Logout")">Log out</a></p>
-          }
-    else
-    {
-        @:<a href="@Href("~/pages/Login")">Log in</a> |
-        @:<a href="@Href("~/pages/Register")">Register</a>
-          }
+
     <form method="get">
         <div>
             <label for="search"></label>
@@ -48,13 +39,10 @@
                             grid.Column(format: @<a href="~/pages/editDesk.cshtml">Edit</a>, style: "edit"),
                             grid.Column("firstname", "First Name", style: "firstname"),
                             grid.Column("lastname", "Last Name", style: "lastname"),
-                            grid.Column("length", "Length", style: "length"),
-                            grid.Column("width", "Width", style: "width"),
                             grid.Column("surfaceArea", "Surface Area", style: "surfaceArea"),
                             grid.Column("drawers", "Drawers", style: "drawers"),
                             grid.Column("material", "Surface Material", style: "material"),
-                            grid.Column("days", "Rush Order Days", style: "days"),
-                            grid.Column("cost", "Rush Order Cost", style: "cost"),
+                            grid.Column("rushOrderDays", "Rush Order Days", style: "days"),
                             grid.Column("finalPrice", "Total", style: "finalPrice"),
                             grid.Column("dateCreated", "Date Created", format: @<text>@item.DateAdded.ToString("MMM dd yyyy")</text>, style: "date"),
                             grid.Column(format: @<a href="~/pages/deleteDesk.cshtml">Delete</a>, style: "delete")

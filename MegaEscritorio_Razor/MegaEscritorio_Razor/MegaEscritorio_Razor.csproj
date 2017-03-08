@@ -160,6 +160,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="pages\images\" />
     <Folder Include="shared\" />
   </ItemGroup>
   <ItemGroup>

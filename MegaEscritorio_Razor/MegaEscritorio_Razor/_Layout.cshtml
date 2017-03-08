@@ -1,19 +1,28 @@
 ﻿<!DOCTYPE html>
 <html>
+
 <head>
     <title>@Page.Title</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <link href="~/style/mainStyle.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
     <div id="container">
         <div id="header">
             <h1>Mega Escritorio</h1>
             <div id="nav">
-                <a href="~/pages/Home.cshtml" class="nav-link">Home</a>
-                <a href="~/pages/addDesk.cshtml" class="nav-link">Add</a>
-                <a href="~/pages/login.cshtml" class="nav-link">Login</a>
-                <a href="~/pages/register.cshtml" class="nav-link">Register</a>
+                @if (WebSecurity.IsAuthenticated)
+                {
+                    <a href="~/pages/Home.cshtml" class="nav-link">Home</a>
+                    <a href="~/pages/addDesk.cshtml" class="nav-link">Add</a>
+                    <a href="~/pages/Logout" class="nav-link">@WebSecurity.CurrentUserName</a> 
+                }
+                else
+                {
+                    @:<a href="@Href("~/pages/Login")" class="nav-link">Log in</a> | 
+                    @:<a href="@Href("~/pages/Register")" class="nav-link">Register</a>
+                 }
             </div>
         </div>
         <div id="main">
@@ -24,4 +33,5 @@
         </div>
     </div>
 </body>
+
 </html>
