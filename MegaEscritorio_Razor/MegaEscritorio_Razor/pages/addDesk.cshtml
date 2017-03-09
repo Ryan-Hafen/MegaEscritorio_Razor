@@ -65,10 +65,10 @@
         }
         rushOrderDays = Request.Form["days"].AsInt();
 
-        var dbCommand = "SELECT cost FROM rushOrder WHERE days = @0 and @1 BETWEEN lowArea AND highArea";
-        rushOrderCost = db.QuerySingle(dbCommand, rushOrderDays, surfaceArea);
+        //var dbCommand = "SELECT cost FROM rushOrder WHERE days = @0 AND @1 BETWEEN lowArea and highArea";
+        //rushOrderCost = db.QuerySingle(dbCommand, rushOrderDays, surfaceArea);
 
-        if(surfaceArea <= 1000)
+        if (surfaceArea <= 1000)
         {
             finalPrice = 200 + drawerCost + materialCost + rushOrderCost;
             var insertCommand = "INSERT INTO deskDetails (email, firstName, lastName, length, width, surfaceArea, drawers, drawerCost, material, materialCost, rushOrderDays, rushOrderCost, finalPrice, dateCreated) Values(@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)";
