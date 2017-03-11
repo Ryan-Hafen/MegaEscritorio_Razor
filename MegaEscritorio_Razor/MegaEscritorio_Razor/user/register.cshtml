@@ -1,8 +1,8 @@
 ﻿@{
-    Validation.Add("username",
-        Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$",
-        "Invalid format for an email address")
-        );
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Register";
+
+    Validation.Add("username",Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$","Invalid format for an email address"));
     Validation.RequireField("firstName", "Gimme your First name!");
     Validation.RequireField("lastname", "Gimme your Last name!");
     Validation.RequireField("password", "Password cannot be empty");
@@ -53,58 +53,44 @@
                 var db = Database.Open("MegaEscritorioDB");
                 var updateCommand = "UPDATE UserProfile SET firstname=@0, lastname=@1 WHERE email=@2";
                 db.Execute(updateCommand, firstName, lastName, username);
-                Response.Redirect("~/pages/Home.cshtml");
+                Response.Redirect("~/user/Home");
 
             }
         }
     }
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="@Href("~/")mainStyle.css" type="text/css" />
-    <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
+
     <h1>Register</h1>
     <form method="post">
-        <p>
-            @Html.Label("Username (email):")
-            @Html.TextBox("username", @Request["username"])
-            @Html.ValidationMessage("username")
-        </p>
-        <p>
-            @Html.Label("First Name:")
-            @Html.TextBox("firstName", @Request["firstName"])
-            @Html.ValidationMessage("firstName")
-        </p>
-        <p>
-            @Html.Label("Last Name:")
-            @Html.TextBox("lastName", @Request["lastName"])
-            @Html.ValidationMessage("lastName")
-        </p>
-
-        <p>
-            @Html.Label("Password:")
-            @Html.Password("password", @Request["password"])
-            @Html.ValidationMessage("password")
-        </p>
-        <p>
-            @Html.Label("Confirm password:")
-            @Html.Password("confirmPassword", @Request["confirmPassword"])
-            @Html.ValidationMessage("confirmPassword")
-        </p>
-
-        <p>
-            <input type="submit" value="Submit" />
-        </p>
-        <p>
-            <a href="@Href("~/pages/Logout")">Log out</a>
-            <br />
-            <a href="@Href("~/pages/Home")">Home</a>
-        </p>
-    </form>
-</body>
-</html>
+        <fieldset>
+            <p>
+                @Html.Label("Username (email):")
+                @Html.TextBox("username", @Request["username"])
+                @Html.ValidationMessage("username")
+            </p>
+            <p>
+                @Html.Label("First Name:")
+                @Html.TextBox("firstName", @Request["firstName"])
+                @Html.ValidationMessage("firstName")
+            </p>
+            <p>
+                @Html.Label("Last Name:")
+                @Html.TextBox("lastName", @Request["lastName"])
+                @Html.ValidationMessage("lastName")
+            </p>
+            <p>
+                @Html.Label("Password:")
+                @Html.Password("password", @Request["password"])
+                @Html.ValidationMessage("password")
+            </p>
+            <p>
+                @Html.Label("Confirm password:")
+                @Html.Password("confirmPassword", @Request["confirmPassword"])
+                @Html.ValidationMessage("confirmPassword")
+            </p>
+            <p>
+                <input type="submit" value="Submit" />
+            </p>
+        </fieldset>
+</form>

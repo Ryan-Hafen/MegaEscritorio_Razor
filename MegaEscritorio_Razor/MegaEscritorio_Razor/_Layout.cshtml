@@ -5,35 +5,42 @@
     <title>@Page.Title</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <link href="~/style/mainStyle.css" rel="stylesheet" type="text/css" />
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.2.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8.1/jquery.validate.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 </head>
 
 <body>
-    <div id="container">
-        <div id="header">
-            <h1>Mega Escritorio</h1>
-            <div id="nav">
-                @*@if (WebSecurity.IsAuthenticated)
-                {*@
-                    <a href="~/pages/Home.cshtml" class="nav-link">Home</a>
-                    <a href="~/pages/addDesk.cshtml" class="nav-link">Add</a>
-                    @*<a href="~/pages/Logout" class="nav-link">@WebSecurity.CurrentUserName</a> 
-                }
-                else
-                {
-                    @:<a href="@Href("~/pages/Login")" class="nav-link">Log in</a> | 
-                    @:<a href="@Href("~/pages/Register")" class="nav-link">Register</a>
-                 }*@
-            </div>
+    <div id="header">
+        <h1>Mega Escritorio</h1>
+        <div class="nav-user">
+            @if (WebSecurity.IsAuthenticated)
+            {
+                var authenticatedUser = WebSecurity.CurrentUserName;
+                var db = Database.Open("MegaEscritorioDB");
+                var UserData = db.QuerySingle("SELECT firstName, lastName FROM UserProfile WHERE LOWER(Email) = LOWER(@0)", authenticatedUser);
+                @:<a href="@Href(" ~/user/Logout")">@UserData.firstName</a>
+            }
+            else
+            {
+                @:<a href="@Href(" ~/user/Login ")">Log in</a> |
+                @:<a href="@Href(" ~/user/Register")">Register</a>
+             }
         </div>
-        <div id="main">
-            @RenderBody()
+        <div class="nav">
+            @if (WebSecurity.IsAuthenticated)
+            {
+              @:<a href="@Href(" ~/user/Home")">Home</a> 
+              @:<a href="@Href(" ~/pages/addDesk")">Add</a> 
+            }
+            else
+            { @:<a href="@Href(" ~/user/Home")">Home</a> 
+              @:<a href="@Href(" ~/pages/addDesk")">Add</a>
+             }
         </div>
-        <div id="footer">
-            &copy; @DateTime.Now.Year Mega Escritorio
-        </div>
+    </div>
+    <div id="main">
+        @RenderBody()
+    </div>
+    <div id="footer">
+        &copy; @DateTime.Now.Year Mega Escritorio
     </div>
 </body>
 

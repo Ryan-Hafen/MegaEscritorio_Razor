@@ -8,8 +8,8 @@
 
     if (!Request.QueryString["search"].IsEmpty())
     {
-        selectCommand = "SELECT * FROM deskDetails WHERE firstname LIKE @0 or lastname LIKE @0";
-        searchTerm = "%" + Request["search"] + "%";
+        selectCommand = "SELECT * FROM deskDetails WHERE lower(firstname) LIKE @0 or lower(lastname) LIKE @0";
+        searchTerm = "%" + Request["search"].ToLower() + "%";
     }
 
     var selectedData = db.Query(selectCommand, searchTerm);
@@ -18,16 +18,14 @@
 
 
 <h2>Home</h2>
-<div>
 
-    <form method="get">
-        <div>
-            <label for="search"></label>
-            <input type="text" name="search" value="@Request.QueryString["search"]" />
-            <input type="Submit" value="Search" /><br />
-        </div>
-    </form>
-</div>
+<form method="get">
+    <div>
+        <label for="search"></label>
+        <input type="text" name="search" value="@Request.QueryString["search"]" />
+        <input type="Submit" value="Search" /><br />
+    </div>
+</form>
 <div>
 
     @grid.GetHtml(
@@ -36,16 +34,16 @@
                     alternatingRowStyle: "alt",
                     mode: WebGridPagerModes.Numeric,
                     columns: grid.Columns(
-                            grid.Column(format: @<a href="~/pages/editDesk.cshtml">Edit</a>, style: "edit"),
+                            grid.Column(format: @<a href="~/pages/editDesk/@item.Id">Edit</a>, style: "edit"),
                             grid.Column("firstname", "First Name", style: "firstname"),
                             grid.Column("lastname", "Last Name", style: "lastname"),
                             grid.Column("surfaceArea", "Surface Area", style: "surfaceArea"),
                             grid.Column("drawers", "Drawers", style: "drawers"),
                             grid.Column("material", "Surface Material", style: "material"),
-                            grid.Column("rushOrderDays", "Rush Order Days", style: "days"),
+                            grid.Column("rushOrderDays", "Rush Order", style: "days"),
                             grid.Column("finalPrice", "Total", style: "finalPrice"),
-                            grid.Column("dateCreated", "Date Created", format: @<text>@item.DateAdded.ToString("MMM dd yyyy")</text>, style: "date"),
-                            grid.Column(format: @<a href="~/pages/deleteDesk.cshtml">Delete</a>, style: "delete")
+                            grid.Column("dateCreated", "Date", format: @<text>@item.DateCreated.ToString("MMM dd yyyy")</text>, style: "date"),
+                            grid.Column(format: @<a href="~/pages/deleteDesk/@item.Id">Delete</a>, style: "delete")
                     )
            )
 </div>

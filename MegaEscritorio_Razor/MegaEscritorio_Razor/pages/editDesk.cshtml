@@ -1,98 +1,209 @@
 ﻿@{
     Layout = "~/_Layout.cshtml";
-    Page.Title = "Edit Scripture";
+    Page.Title = "Edit Desk";
 
 
-
-    var scriptureId = "";
-    var book = "";
-    var chapter = "";
-    var verse = "";
-    var favoriteFlag = "";
-    var note = "";
+    var firstName = "";
+    var lastName = "";
+    var length = 0;
+    var width = 0;
+    var surfaceArea = 0;
+    var surfaceAreaCost = 0.00;
+    var drawers = 0;
+    var drawersCost = 0;
+    var material = "";
+    var materialCost = 0;
+    var rushOrderDays = 0;
+    var rushOrderCost = 0;
+    var finalPrice = 0.00;
+    var date = DateTime.Now;
+    var deskId = UrlData[0];
+    var Id = deskId.AsInt();
 
     if (!IsPost)
     {
-        if (!Request.QueryString["Id"].IsEmpty() && Request.QueryString["Id"].IsInt())
+        if (!deskId.IsEmpty() && deskId.IsInt())
         {
-            scriptureId = Request.QueryString["Id"];
-            var db = Database.Open("myScriptureJournalDB");
-            var dbCommand = "SELECT * FROM scripture WHERE ID = @0";
-            var row = db.QuerySingle(dbCommand, scriptureId);
+            var db = Database.Open("MegaEscritorioDB");
+            var dbCommand = "SELECT * FROM deskDetails WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, Id);
 
             if (row != null)
             {
-                book = row.book;
-                chapter = row.chapter;
-                verse = row.verse;
-                favoriteFlag = row.favoriteFlag;
-                note = row.note;
+                firstName = row.firstName;
+                lastName = row.lastName;
+                length = row.length;
+                width = row.width;
+                surfaceArea = row.surfaceArea;
+                drawers = row.drawers;
+                drawersCost = row.drawersCost;
+                material = row.material;
+                materialCost = row.materialCost;
+                rushOrderDays = row.rushOrderDays;
+                rushOrderCost = row.rushOrderCost;
+                finalPrice = row.finalPrice;
+                date = row.dateCreated;
+                Id = row.Id;
             }
             else
             {
-                Validation.AddFormError("No scripture was selected.");
+                Validation.AddFormError("No desk was selected.");
             }
         }
         else
         {
-            Validation.AddFormError("No scripture was selected.");
+            Validation.AddFormError("No desk was selected.");
         }
     }
 
     if (IsPost)
     {
-        Validation.RequireField("book", "Book is required!");
-        Validation.RequireField("chapter", "Chapter is required!");
+        Validation.Add("length", Validator.Range(24, 48, "Length must be between 12 and 48"));
+        Validation.Add("width", Validator.Range(24, 48, "Width must be between 12 and 48"));
+        Validation.Add("drawers", Validator.Range(0, 7, "You can only have a maximum of 7 drawers"));
+        Validation.RequireField("drawers", "Please select number of drawers!");
+        Validation.RequireField("material", "Please select desk surface material!");
+        Validation.RequireField("days", "How fast do you want it?");
 
-        book = Request.Form["book"];
-        chapter = Request.Form["chapter"];
-        verse = Request.Form["verse"];
-        favoriteFlag = Request.Form["favoriteFlag"];
-        note = Request.Form["note"];
-        scriptureId = Request.Form["scriptureId"];
+        var db = Database.Open("MegaEscritorioDB");
+        var dbCommand = "SELECT * FROM deskDetails WHERE ID = @0";
+        var row = db.QuerySingle(dbCommand, Id);
 
-        if (Validation.IsValid())
+        firstName = row.FirstName;
+        lastName = row.LastName;
+        length = Request.Form["length"].AsInt();
+        width = Request.Form["width"].AsInt();
+        surfaceArea = length * width;
+        drawers = Request.Form["drawers"].AsInt();
+        drawersCost = drawers * 50 ;
+        material = Request.Form["material"];
+        materialCost = 0;
+        switch (material)
         {
-            var db = Database.Open("myScriptureJournalDB");
-            var updateCommand = "UPDATE scripture SET book=@0, chapter=@1, verse=@2, favoriteFlag=@3, note=@4 WHERE Id=@5";
-            db.Execute(updateCommand, book, chapter, verse, favoriteFlag, note, scriptureId);
-            Response.Redirect("~/pages/Index.cshtml");
+            case "Mahogany":
+                materialCost = 500;
+                break;
+            case "Oak":
+                materialCost = 200;
+                break;
+            case "Poplar":
+                materialCost = 175;
+                break;
+            case "Birch":
+                materialCost = 150;
+                break;
+            case "Laminate":
+                materialCost = 100;
+                break;
+            case "Pine":
+                materialCost = 50;
+                break;
         }
+        rushOrderDays = Request.Form["rushOrderDays"].AsInt();
+        var selectCommand = "SELECT cost FROM rushOrder WHERE days = @0 and @1 between lowArea AND highArea";
+        var selectData = db.QuerySingle(selectCommand, rushOrderDays, surfaceArea);
+        var rushorderCost = selectData.cost;
 
+        if (surfaceArea < 1000)
+        {
+            surfaceAreaCost = 200;
+
+            finalPrice = surfaceAreaCost + drawersCost + materialCost + rushOrderDays;
+
+            var updateCommand = "UPDATE deskDetails SET length=@0, width=@1, surfaceArea=@2, drawers=@3, drawersCost=@4, material=@5, materialCost=@6, rushOrderDays=@7, rushOrderCost=@8, finalPrice=@9, dateCreated=@10 WHERE Id=@11";
+            db.Execute(updateCommand, length, width, surfaceArea, drawers, drawersCost, material, materialCost, rushOrderDays, rushorderCost, finalPrice, DateTime.Now, deskId);
+            Response.Redirect("~/user/Home");
+        }
+        else
+        {
+            surfaceAreaCost = ((surfaceArea - 1000) * 5) + 200;
+
+            finalPrice = surfaceAreaCost + drawersCost + materialCost + rushOrderDays;
+
+            var updateCommand = "UPDATE deskDetails SET length=@0, width=@1, surfaceArea=@2, drawers=@3, drawersCost=@4, material=@5, materialCost=@6, rushOrderDays=@7, rushOrderCost=@8, finalPrice=@9, dateCreated=@10 WHERE Id=@11";
+            db.Execute(updateCommand, length, width, surfaceArea, drawers, drawersCost, material, materialCost, rushOrderDays, rushorderCost, finalPrice, DateTime.Now, deskId);
+            Response.Redirect("~/user/Home");
+        }
     }
 }
-<h2>Edit a Scripture</h2>
+<h2>Edit a Desk</h2>
 @Html.ValidationSummary()
 <form method="post">
     <fieldset>
-        <legend>Scripture</legend>
         <p class="block">
-            @Html.Label("Book:")
-            @Html.TextBox("book", value: @book)
-            @Html.ValidationMessage("book")
+            @Html.Label("First Name:")
+            <span>@firstName</span>
         </p>
         <p class="block">
-            @Html.Label("Chapter(s):")
-            @Html.TextBox("chapter", value: @chapter)
-            @Html.ValidationMessage("chapter")
+            @Html.Label("Last Name:")
+            <span>@lastName</span>
         </p>
         <p class="block">
-            @Html.Label("Verse(s):")
-            @Html.TextBox("verse", value: @verse)
+            @Html.Label("Length:")
+            <input type="text" name="length" value="@length" />
+            @Html.ValidationMessage("length")
         </p>
         <p class="block">
-            @Html.Label("Favorite:")
-            <select name="favoriteFlag">
-                <option value="Yes">Yes</option>
-                <option value=""></option>
+            @Html.Label("Width:")
+            <input type="text" name="width" value="@width" />
+            @Html.ValidationMessage("width")
+        </p>
+        <p class="block">
+            @Html.Label("Drawers:")
+            <select name="drawers" >
+                <option value="NULL">--Select--</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
             </select>
+            @Html.ValidationMessage("drawers")
         </p>
         <p class="block">
-            @Html.Label("Note:")
-            @Html.TextArea("note", value: @note)
+            @Html.Label("Material:")
+            <select id="material" name="material" onchange="changeImage(this)">
+                <option value="NULL">--Select--</option>
+                <option value="Mahogany">Mahogany</option>
+                <option value="Oak">Oak</option>
+                <option value="Poplar">Poplar</option>
+                <option value="Birch">Birch</option>
+                <option value="Laminate">Laminate</option>
+                <option value="Pine">Pine</option>
+            </select>
+            @Html.ValidationMessage("material")
         </p>
-        <input type="hidden" name="scriptureId" value="@scriptureId" />
+        <p class="block">
+            @Html.Label("Rush Order:")
+            <select name="rushOrderDays">
+                <option value="">--Select--</option>
+                <option value="0">No Rush</option>
+                <option value="3">3 Days</option>
+                <option value="5">5 Days</option>
+                <option value="7">7 Days</option>
+            </select>
+            @Html.ValidationMessage("rushOrderDays")
+        </p>
+        <input type="hidden" name="deskId" value="@deskId" />
         <p><input type="submit" name="buttonSubmit" value="Submit Changes" /></p>
     </fieldset>
 </form>
-@*<p><a href="~/pages/Index.cshtml">Back to Scripture List</a></p>*@
+<div id="image">
+    <div>
+        <img id="sampleImage" src="" alt="" />
+    </div>
+</div>
+
+<script type="text/javascript">
+    function changeImage(elem) {
+        var material = elem.value;
+        if (material != "NULL") {
+            document.getElementById("sampleImage").src = "/pages/images/" + material + ".jpg";
+            document.getElementById("image").style.visibility = "visible";
+        }
+        else document.getElementById("image").style.visibility = "hidden";
+    }
+</script>

@@ -1,8 +1,8 @@
 ﻿@{
-    Validation.Add("username",
-        Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$",
-        "Invalid format for an email address")
-        );
+    Layout = "~/_Layout.cshtml";
+    Page.Title = "Log In";
+
+    Validation.Add("username",Validator.Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$","Invalid format for an email address"));
     Validation.RequireField("password", "Password cannot be empty");
 
     var username = "";
@@ -15,7 +15,7 @@
         password = Request["password"];
         if (WebSecurity.Login(username, password, true))
         {
-            Response.Redirect("~/pages/Home");
+            Response.Redirect("~/user/Home");
         }
         else
         {
@@ -23,21 +23,13 @@
         }
     }
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="@Href("~/mainStyle.css")" type="text/css" />
-    <title>Login</title>
-</head>
-<body>
     <h1>Login</h1>
     <form method="post">
         @if (WebSecurity.IsAuthenticated)
         {
             <p>
                 You are currently logged in as @WebSecurity.CurrentUserName.
-                <a href="@Href("~/pages/Logout")">Log out</a>
+                <a href="@Href("~/user/Logout")">Log out</a>
             </p>
         }
         <p>
@@ -52,8 +44,8 @@
             <input type="submit" value="Submit" />
         </p>
 
-        <p>No user name? <a href="@Href("~/pages/Register")">Register</a></p>
-        <p><a href="@Href("~/pages/Home")">Return to home page</a></p>
+        <p>No user name? <a href="@Href("~/user/Register")">Register</a></p>
+        <p><a href="@Href("~/user/Home")">Return to home page</a></p>
 
     </form>
     <p>
@@ -62,5 +54,3 @@
             <span class="errorMessage">@errorMessage</span>
         }
     </p>
-</body>
-</html>

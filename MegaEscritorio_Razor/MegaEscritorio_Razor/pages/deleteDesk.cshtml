@@ -1,82 +1,96 @@
 ﻿@{
     Layout = "~/_Layout.cshtml";
-    Page.Title = "Delete Scripture";
-
-    var scriptureId = "";
-    var book = "";
-    var chapter = "";
-    var verse = "";
-    var favoriteFlag = "";
-    var note = "";
-    var dateAdded = "";
+    Page.Title = "Delete Desk";
+    
+    var firstName = "";
+    var lastName = "";
+    var surfaceArea = 0;
+    var drawers = 0;
+    var material = "";
+    var rushOrderDays = 0;
+    var finalPrice = 0.00;
+    var date = DateTime.Now;
+    var deskId = UrlData[0];
+    var Id = deskId.AsInt();
 
     if (!IsPost)
     {
-        if (!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt())
+        if (!deskId.IsEmpty() && deskId.IsInt())
         {
-            scriptureId = Request.QueryString["Id"];
-            var db = Database.Open("myScriptureJournalDB");
-            var dbCommand = "SELECT * FROM scripture WHERE ID = @0";
-            var row = db.QuerySingle(dbCommand, scriptureId);
+            var db = Database.Open("MegaEscritorioDB");
+            var dbCommand = "SELECT * FROM deskDetails WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, Id);
 
             if (row != null)
             {
-                book = row.Book;
-                chapter = row.Chapter;
-                verse = row.Verse;
-                favoriteFlag = row.FavoriteFlag;
-                note = row.Note;
-                dateAdded = row.dateAdded;
+                firstName = row.firstName;
+                lastName = row.lastName;
+                surfaceArea = row.surfaceArea;
+                drawers = row.drawers;
+                material = row.material;
+                rushOrderDays = row.rushOrderDays;
+                finalPrice = row.finalPrice;
+                date = row.dateCreated;
+                Id = row.Id;
             }
             else
             {
-                Validation.AddFormError("No scripture was selected.");
+                Validation.AddFormError("No desk was selected.");
             }
         }
         else
         {
-            Validation.AddFormError("No scripture was selected.");
+            Validation.AddFormError("No desk was selected.");
         }
     }
 
     if (IsPost && !Request["buttonDelete"].IsEmpty())
     {
-        scriptureId = Request.Form["scriptureId"];
-        var db = Database.Open("myScriptureJournalDB");
-        var deleteCommand = "DELETE FROM scripture WHERE ID = @0";
-        db.Execute(deleteCommand, scriptureId);
-        Response.Redirect("~/pages/Index.cshtml");
+        var db = Database.Open("MegaEscritorioDB");
+        var deleteCommand = "DELETE FROM deskDetails WHERE ID = @0";
+        db.Execute(deleteCommand, Id);
+        Response.Redirect("~/user/Home");
     }
 }
-<h2>Delete Scripture</h2>
+<h2>Delete Desk</h2>
 @Html.ValidationSummary()
-<p><a href="~/pages/Index.cshtml">Back to Scripture List</a></p>
+<p><a href="~/user/Home.cshtml">Back to Home</a></p>
 <form method="post">
     <fieldset>
-        <legend>Scripture</legend>
         <p class="block">
-            @Html.Label("Book:")
-            <span>@book</span>
+            @Html.Label("First Name:")
+            <span>@firstName</span>
         </p>
         <p class="block">
-            @Html.Label("Chapter(s):")
-            <span>@chapter</span>
+            @Html.Label("Last Name:")
+            <span>@lastName</span>
         </p>
         <p class="block">
-            @Html.Label("Verse(s):")
-            <span>@verse</span>
+            @Html.Label("Surface Area:")
+            <span>@surfaceArea</span>
         </p>
         <p class="block">
-            @Html.Label("Note:")
-            <span>@note</span>
+            @Html.Label("Drawers:")
+            <span>@drawers</span>
         </p>
-
         <p class="block">
-            @Html.Label("Date Added:")
-            <span>@dateAdded</span>
+            @Html.Label("Material:")
+            <span>@material</span>
         </p>
-        <input type="hidden" name="scriptureId" value="@scriptureId" />
-        <p><input type="submit" name="buttonDelete" value="Delete Scripture" /></p>
+        <p class="block">
+            @Html.Label("Rush Order:")
+            <span>@rushOrderDays</span>
+        </p>
+        <p class="block">
+            @Html.Label("Final Price:")
+            <span>$@finalPrice</span>
+        </p>
+        <p class="block">
+            @Html.Label("Date:")
+            <span>@date.ToString("MMM dd yyyy")</span>
+        </p>
+        <input type="hidden" name="deskId" value="@Id" />
+        <p><input type="submit" name="buttonDelete" value="Delete Desk" /></p>
     </fieldset>
-    <p><a href="~/pages/Index.cshtml">Back to Scripture List</a></p>
+    <p><a href="~/user/Home">Back to Home</a></p>
 </form>
